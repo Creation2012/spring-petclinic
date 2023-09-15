@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.springframework.samples</groupId>
   <artifactId>spring-petclinic</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.1.1-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -34,6 +34,12 @@
     <spring-format.version>0.0.39</spring-format.version>
 
   </properties>
+
+  <scm>
+    <connection>scm:git:ssh://git@github.com/Creation2012/spring-petclinic.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/Creation2012/spring-petclinic.git</developerConnection>
+    <url>https://github.com/Creation2012/spring-petclinic</url>
+  </scm>
 
   <distributionManagement>
     <repository>
