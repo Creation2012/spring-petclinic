@@ -12,9 +12,10 @@ plugins {
 
 apply plugin: 'java'
 
+project.version = scmVersion.version
 group = 'org.springframework.samples'
-version = '3.1.0'
 sourceCompatibility = '17'
+
 
 repositories {
     maven {
@@ -62,13 +63,59 @@ task custom{
     }
 }
 
-nexusPublishing {
-    repositories {
-        myNexus {
-            nexusUrl = uri("http://localhost:8081/repository/gradle-releases")
-            snapshotRepositoryUrl = uri("http://localhost:8081/repository/gradle-snapshots")
-            username = "admin"
-            password = "admin"
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
         }
     }
+
+    repositories {
+        maven {
+            credentials {
+                username "admin"
+                password "admin"
+            }
+
+            if(version.endsWith('SNAPSHOT')) {
+                url "http://localhost:8081/repository/gradle-snapshots"
+            } else {
+                url "http://localhost:8081/repository/gradle-releases"
+            }
+
+            allowInsecureProtocol = true
+        }
+    }
+}
+
+scmVersion {
+    localOnly.set(true)
+    useHighestVersion.set(true)
+    tag {
+        prefix.set("release")
+        versionSeparator.set("/")
+
+        // configure via function calls
+        deserializer({ tagProperties,scmPosition,String -> "tag" })
+        serializer( { tagProperties,version -> "tag" })
+    }
+    repository {
+        type.set("git")
+    }
+    checks {
+        aheadOfRemote.set(false)
+        snapshotDependencies.set(true)
+    }
+    nextVersion {
+        // function calls
+        deserializer( { nextVersionProperties,scmPosition,tag -> "version" })
+        serializer( {nextVersionProperties,version -> "version"})
+    }
+
+    monorepos {
+    }
+
+    versionCreator({versionFromTag,scmPosition -> "version"})
+    snapshotCreator({versionFromTag,scmPosition -> "version"})
+    versionIncrementer({versionIncrementerContext -> Version})
 }
