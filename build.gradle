@@ -62,13 +62,46 @@ task custom{
     }
 }
 
-nexusPublishing {
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
     repositories {
-        myNexus {
-            nexusUrl = uri("http://localhost:8081/repository/gradle-releases")
-            snapshotRepositoryUrl = uri("http://localhost:8081/repository/gradle-snapshots")
-            username = "admin"
-            password = "admin"
+        maven {
+            credentials {
+                username "admin"
+                password "admin"
+            }
+
+            if(version.endsWith('SNAPSHOT')) {
+                url "http://localhost:8081/repository/gradle-snapshots"
+            } else {
+                url "http://localhost:8081/repository/gradle-releases"
+            }
+
+            allowInsecureProtocol = true
         }
     }
 }
+
+scmVersion {
+    tag {
+        prefix.set("spring-petclinic-")
+    }
+    nextVersion {
+        suffix.set("SNAPSHOT")
+    }
+}
+//nexusPublishing {
+//    repositories {
+//        myNexus {
+//            nexusUrl = uri("http://localhost:8081/repository/gradle-releases")
+//            snapshotRepositoryUrl = uri("http://localhost:8081/repository/gradle-snapshots")
+//            username = "admin"
+//            password = "admin"
+//        }
+//    }
+//}
