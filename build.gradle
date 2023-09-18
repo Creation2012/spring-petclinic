@@ -13,7 +13,6 @@ plugins {
 apply plugin: 'java'
 
 group = 'org.springframework.samples'
-version = '3.1.0'
 sourceCompatibility = '17'
 
 repositories {
@@ -62,13 +61,46 @@ task custom{
     }
 }
 
-nexusPublishing {
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
     repositories {
-        myNexus {
-            nexusUrl = uri("http://localhost:8081/repository/gradle-releases")
-            snapshotRepositoryUrl = uri("http://localhost:8081/repository/gradle-snapshots")
-            username = "admin"
-            password = "admin"
+        maven {
+            credentials {
+                username "admin"
+                password "admin"
+            }
+
+            if(version.endsWith('SNAPSHOT')) {
+                url "http://localhost:8081/repository/gradle-snapshots"
+            } else {
+                url "http://localhost:8081/repository/gradle-releases"
+            }
+
+            allowInsecureProtocol = true
         }
     }
 }
+
+scmVersion {
+    tag {
+        prefix.set("spring-petclinic-")
+    }
+    nextVersion {
+        suffix.set("SNAPSHOT")
+    }
+}
+//nexusPublishing {
+//    repositories {
+//        myNexus {
+//            nexusUrl = uri("http://localhost:8081/repository/gradle-releases")
+//            snapshotRepositoryUrl = uri("http://localhost:8081/repository/gradle-snapshots")
+//            username = "admin"
+//            password = "admin"
+//        }
+//    }
+//}
