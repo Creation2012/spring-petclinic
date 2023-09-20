@@ -1,18 +1,26 @@
 plugins {
   id 'java'
+  id 'java-library'
   id 'org.springframework.boot' version '3.1.1'
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.graalvm.buildtools.native' version '0.9.23'
+  id 'pl.allegro.tech.build.axion-release' version '1.15.1'
+  id("io.github.gradle-nexus.publish-plugin") version '1.3.0'
+  id 'maven-publish'
+  id 'signing'
 }
 
 apply plugin: 'java'
 
 group = 'org.springframework.samples'
-version = '3.1.0'
 sourceCompatibility = '17'
 
+
 repositories {
-  mavenCentral()
+    maven {
+        url "http://localhost:8081/repository/gradle-proxy"
+        allowInsecureProtocol = true
+    }
 }
 
 ext.webjarsFontawesomeVersion = "4.7.0"
@@ -44,3 +52,48 @@ dependencies {
 tasks.named('test') {
   useJUnitPlatform()
 }
+
+task custom{
+    dependsOn 'build'
+    doLast {
+        def reportPath = project.file('build/reports/tests/test/index.html')
+        def reportUri = reportPath.toURI()
+        java.awt.Desktop.getDesktop().browse(reportUri)
+    }
+}
+
+scmVersion {
+    tag {
+        prefix.set("spring-petclinic")
+    }
+}
+
+project.version = scmVersion.version
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "org.springframework.samples"
+            artifactId = "spring-petclinic"
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username "admin"
+                password "admin"
+            }
+
+            if(project.version.endsWith('SNAPSHOT')) {
+                url "http://localhost:8081/repository/gradle-snapshots/"
+            } else {
+                url "http://localhost:8081/repository/gradle-releases/"
+            }
+
+            allowInsecureProtocol = true
+        }
+    }
+}
+
