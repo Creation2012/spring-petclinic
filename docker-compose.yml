@@ -11,6 +11,7 @@ services:
       - MYSQL_USER=petclinic
       - MYSQL_PASSWORD=petclinic
       - MYSQL_DATABASE=petclinic
+      - SPRING_PROFILES_ACTIVE=mysql
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
     profiles:
@@ -23,5 +24,17 @@ services:
       - POSTGRES_PASSWORD=petclinic
       - POSTGRES_USER=petclinic
       - POSTGRES_DB=petclinic
+      - SPRING_PROFILES_ACTIVE=postgres
     profiles:
     - postgres
+  spring-petclinic:
+    build: 
+      dockerfile: Dockerfile.multi
+      args:
+        - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    environment:
+      JAR_FILE: target/*.jar
+    depends_on:
+      - mysql
+    ports:
+      - "8082:8080"
