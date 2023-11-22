@@ -2,8 +2,6 @@
 *
 
 # Allow files and directories
-!/file.txt
-!/src
 !/target
 
 # Ignore unnecessary files inside allowed directories
