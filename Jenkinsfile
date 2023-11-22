@@ -62,7 +62,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_main}", 'repository_login_creds') {
-                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f Dockerfile.multi",".")
+                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f Dockerfile.multi .")
                         app.push("${env.GIT_COMMIT}")
                         app.push("latest")
                     }
