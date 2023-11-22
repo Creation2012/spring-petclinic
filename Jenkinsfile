@@ -1,6 +1,9 @@
 pipeline {
     agent any
     stages {
+        checkout scm
+        env.GIT_COMMIT = scmVars.GIT_COMMIT
+
         stage('checkstyle') {
             steps {
                 sh "./mvnw clean checkstyle:checkstyle"
@@ -23,13 +26,33 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts 'target/spring-petclinic-*.jar'
+                    archiveArtifacts 'target/${env.APP_NAME}-*.jar'
                 }
             }
         }
-        stage('image') {
+        stage('image to mr') {
             steps {
-                sh "echo create docker image"
+                script {
+                    docker.withRegistry('${env.DOCKER_SERVER_mr}', 'repository_login_creds') {
+                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}")
+                        app.push("${env.GIT_COMMIT}")
+                        app.push("latest")
+                    }
+                }
+            }
+        }
+        stage('image to main') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    docker.withRegistry('${env.DOCKER_SERVER_main}', 'repository_login_creds') {
+                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}")
+                        app.push("${env.GIT_COMMIT}")
+                        app.push("latest")
+                    }
+                }
             }
         }
     }
