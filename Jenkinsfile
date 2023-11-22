@@ -6,8 +6,8 @@ pipeline {
                 sh "./mvnw clean checkstyle:checkstyle"
             }
             post {
-                success {
-                    junit '**/target/*.xml'
+                always {
+                    junit '**/target/checkstyle-result.xml'
                     archiveArtifacts './target/site/'
                 }
             }
