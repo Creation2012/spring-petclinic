@@ -7,7 +7,7 @@ pipeline {
             }
             post {
                 success {
-                    junit './target/checkstyle-*.xml'
+                    junit '**/target/*.xml'
                     archiveArtifacts './target/site/'
                 }
             }
