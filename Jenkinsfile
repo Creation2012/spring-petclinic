@@ -42,6 +42,7 @@ pipeline {
         }
         stage('image to mr') {
             steps {
+                sh 'mkdir target/dependency; cd target/dependency; jar -xf ../*.jar'
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_mr}", 'repository_login_creds') {
                         def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}")
