@@ -36,7 +36,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts 'target/${env.APP_NAME}-*.jar'
+                    archiveArtifacts "target/${env.APP_NAME}-*.jar"
                 }
             }
         }
