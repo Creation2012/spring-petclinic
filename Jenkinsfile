@@ -60,7 +60,6 @@ pipeline {
                 branch 'main'
             }
             steps {
-                sh 'mkdir -p target/dependency; cd target/dependency; jar -xf ../*.jar'
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_main}", 'repository_login_creds') {
                         def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f Dockerfile.multi")
