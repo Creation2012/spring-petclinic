@@ -48,7 +48,7 @@ pipeline {
                 sh 'mkdir -p target/dependency; cd target/dependency; jar -xf ../*.jar'
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_mr}", 'repository_login_creds') {
-                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f Dockerfile-pr .")
+                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f docker/Dockerfile-pr .")
                         app.push("${env.GIT_COMMIT}")
                         app.push("latest")
                     }
@@ -62,7 +62,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_main}", 'repository_login_creds') {
-                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f Dockerfile-main .")
+                        def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}","-f docker/Dockerfile-main .")
                         app.push("${env.GIT_COMMIT}")
                         app.push("latest")
                     }
