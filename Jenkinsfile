@@ -7,8 +7,8 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts './target/*.xml'
-                    archiveArtifacts './target/site/'
+                    archiveArtifacts 'target/*.xml'
+                    archiveArtifacts 'target/site/'
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts './target/spring-petclinic-*.jar'
+                    archiveArtifacts 'target/spring-petclinic-*.jar'
                 }
             }
         }
