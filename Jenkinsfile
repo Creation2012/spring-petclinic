@@ -1,8 +1,18 @@
 pipeline {
     agent any
     stages {
-        checkout scm
-        env.GIT_COMMIT = scmVars.GIT_COMMIT
+        stage('checkout') {
+            environment {
+                COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            }
+            steps {
+                script {
+                    // The Git plugin will automatically check out the code
+                    // You can access the commit SHA using the GIT_COMMIT environment variable
+                    echo "Commit SHA: ${env.GIT_COMMIT}"
+                }
+            }
+        }
 
         stage('checkstyle') {
             steps {
