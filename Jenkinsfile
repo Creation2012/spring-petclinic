@@ -5,16 +5,16 @@ pipeline {
             environment {
                 COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
             }
+            when { changeRequest target: "main", comparator: 'EQUALS' }
             steps {
                 script {
-                    // The Git plugin will automatically check out the code
-                    // You can access the commit SHA using the GIT_COMMIT environment variable
                     echo "Commit SHA: ${env.GIT_COMMIT}"
                 }
             }
         }
 
         stage('checkstyle') {
+            when { changeRequest target: "main", comparator: 'EQUALS' }
             steps {
                 sh "./mvnw clean checkstyle:checkstyle"
             }
@@ -26,11 +26,13 @@ pipeline {
             }
         }
         stage('test') {
+            when { changeRequest target: "main", comparator: 'EQUALS' }
             steps {
                 sh "./mvnw clean test"
             }
         }
         stage('build') {
+            when { changeRequest target: "main", comparator: 'EQUALS' }
             steps {
                 sh "./mvnw -DskipTests clean package"
             }
@@ -41,6 +43,7 @@ pipeline {
             }
         }
         stage('image to mr') {
+            when { changeRequest target: "main", comparator: 'EQUALS' }
             steps {
                 sh 'mkdir target/dependency; cd target/dependency; jar -xf ../*.jar'
                 script {
@@ -57,6 +60,7 @@ pipeline {
                 branch 'main'
             }
             steps {
+                sh 'mkdir target/dependency; cd target/dependency; jar -xf ../*.jar'
                 script {
                     docker.withRegistry("${env.DOCKER_SERVER_main}", 'repository_login_creds') {
                         def app = docker.build("${env.APP_NAME}:${env.GIT_COMMIT}")
